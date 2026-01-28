@@ -43,6 +43,11 @@ const config = {
     return loadJson(ACCOUNTS_FILE);
   },
   apiKey: process.env.REP4REP_KEY || "",
+  security: {
+    dashboardPassword: process.env.DASHBOARD_PASSWORD || null,
+    dashboard2FA: process.env.DASHBOARD_2FA_SECRET || null,
+    sessionSecret: process.env.SESSION_SECRET || "rex1337-default-session-salt-2026",
+  },
   ...settings,
 };
 

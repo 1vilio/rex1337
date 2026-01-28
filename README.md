@@ -14,6 +14,9 @@
 
 ### Основные возможности
 - Удобный веб-дашборд для мониторинга и управления.
+- **Безопасность**: 
+- Защита входа паролем и 2FA (TOTP).
+- Защита от перебора паролей (Brute-force protection).
 - Автоматический контроль кулдаунов (24 часа) и лимитов (10 комментариев на аккаунт в день).
 - Полная поддержка Docker для быстрого развертывания.
 - Поддержка Steam 2FA через sharedSecret.
@@ -21,6 +24,14 @@
 Для получения sharedSecret вы можете использовать:
 - [Steam Desktop Authenticator (SDA)](https://github.com/Jessecar96/SteamDesktopAuthenticator)
 - [NebulaAuth](https://github.com/achiez/NebulaAuth-Steam-Desktop-Authenticator-by-Achies)
+
+---
+
+### Безопасность дашборда (Опционально)
+Скрипт поддерживает защиту панели управления паролем и двухфакторной аутентификацией (2FA). Это критически важно при развертывании на публичных VPS серверах.
+- **Мастер-пароль**: Если задана переменная `DASHBOARD_PASSWORD`, панель будет требовать вход. Если оставить пустой — доступ будет открытым (рекомендуется только для домашнего использования).
+- **2FA (TOTP)**: Вы можете добавить дополнительный слой защиты, прописав `DASHBOARD_2FA_SECRET`. Это потребует код из Google Authenticator при входе.
+- **Защита от перебора**: После 3 неудачных попыток IP блокируется на 30 минут.
 
 ---
 
@@ -79,6 +90,9 @@ docker-compose up -d
 | `PORT` | Порт для дашборда и API | `1337` |
 | `LOG_LEVEL` | Уровень логирования (info, debug, error) | `info` |
 | `TZ` | Часовой пояс | `Europe/Moscow` |
+| `DASHBOARD_PASSWORD` | Мастер-пароль для входа в панель | (Опционально) |
+| `DASHBOARD_2FA_SECRET` | Secret для 2FA (TOTP) | (Опционально) |
+| `SESSION_SECRET` | Соль для подписи сессий | (Опционально) |
 
 ---
 
@@ -99,6 +113,8 @@ Automated script for farming points on rep4rep.com by posting comments on Steam 
 
 ### Key Features
 - Clean web dashboard for monitoring and management.
+- **Security**: Password protection and 2FA (TOTP) for dashboard access.
+- Brute-force protection for login attempts.
 - Automatic cooldown management (24h) and limits (10 comments per account per day).
 - Full Docker support for rapid deployment.
 - Steam 2FA support via sharedSecret.
@@ -106,6 +122,14 @@ Automated script for farming points on rep4rep.com by posting comments on Steam 
 To obtain your sharedSecret, you can use:
 - [Steam Desktop Authenticator (SDA)](https://github.com/Jessecar96/SteamDesktopAuthenticator)
 - [NebulaAuth](https://github.com/achiez/NebulaAuth-Steam-Desktop-Authenticator-by-Achies)
+
+---
+
+### Dashboard Security (Optional)
+The script supports protecting the management panel with a password and two-factor authentication (2FA). This is critical when deploying on public VPS servers.
+- **Master Password**: If the `DASHBOARD_PASSWORD` variable is set, the panel will require a login. If left empty, access remains public (recommended only for home use).
+- **2FA (TOTP)**: You can add an extra layer of security by setting `DASHBOARD_2FA_SECRET`. This will require a code from Google Authenticator at login.
+- **Brute-force protection**: After 3 failed attempts, the IP is blocked for 30 minutes.
 
 ---
 
@@ -164,6 +188,9 @@ docker-compose up -d
 | `PORT` | Port for dashboard and API | `1337` |
 | `LOG_LEVEL` | Logging level (info, debug, error) | `info` |
 | `TZ` | Timezone | `Europe/Moscow` |
+| `DASHBOARD_PASSWORD` | Master password for dashboard login | (Optional) |
+| `DASHBOARD_2FA_SECRET` | Secret for 2FA (TOTP) | (Optional) |
+| `SESSION_SECRET` | Salt for session signing | (Optional) |
 
 ---
 

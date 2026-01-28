@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { dirname } from "path";
 import logger from "./logger.js";
 import { config } from "./config.js";
+import { authenticate, login, getIP } from "./auth.js";
 
 const ACCOUNTS_FILE = "./data/accounts.json";
 const SETTINGS_FILE = "./data/settings.json";
@@ -91,6 +92,130 @@ function parsePostData(req) {
   });
 }
 
+function serveLogin(res) {
+  const needs2FA = config.security.dashboard2FA ? "block" : "none";
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REX-1337 | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #0a0a0a;
+            --border: #1a1a1a;
+            --text: #ffffff;
+            --text-dim: #666666;
+            --accent: #ffffff;
+            --red: #ff4444;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Outfit', sans-serif;
+        }
+        body { 
+            background: var(--bg); color: var(--text); margin: 0; 
+            font-family: var(--font-sans); display: flex; align-items: center; 
+            justify-content: center; height: 100vh; overflow: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1;
+        }
+        .login-card {
+            background: var(--surface); border: 1px solid var(--border); padding: 60px;
+            width: 100%; max-width: 400px; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .brand { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+        .brand-logo { 
+            width: 40px; height: 40px; background: var(--text); color: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 24px; font-family: var(--font-mono);
+        }
+        h1 { font-size: 24px; margin: 0; letter-spacing: -0.05em; text-transform: uppercase; }
+        .input-group { margin-bottom: 25px; }
+        label { 
+            display: block; font-size: 10px; color: var(--text-dim); 
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; font-weight: 700;
+        }
+        input {
+            width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border);
+            padding: 12px 0; color: #fff; font-family: var(--font-mono); font-size: 16px;
+            transition: all 0.3s ease; box-sizing: border-box;
+        }
+        input:focus { border-color: var(--text); outline: none; }
+        .btn-login {
+            width: 100%; background: var(--text); color: var(--bg); border: none;
+            padding: 15px; font-weight: 800; font-size: 12px; text-transform: uppercase;
+            letter-spacing: 0.15em; cursor: pointer; transition: all 0.3s ease;
+            margin-top: 20px; font-family: var(--font-mono);
+        }
+        .btn-login:hover { filter: invert(1); transform: translateY(-2px); }
+        .error-msg { 
+            color: var(--red); font-size: 12px; margin-top: 20px; 
+            font-family: var(--font-mono); text-align: center; display: none;
+        }
+        .status-tag {
+            position: absolute; top: 0; right: 0; padding: 10px 20px;
+            font-size: 9px; font-family: var(--font-mono); border-bottom: 1px solid var(--border);
+            border-left: 1px solid var(--border); color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="status-tag">SECURE_NODE_V2</div>
+        <div class="brand">
+            <div class="brand-logo">R</div>
+            <h1>Authentication</h1>
+        </div>
+        <div class="input-group">
+            <label>Master Password</label>
+            <input type="password" id="password" autocomplete="current-password">
+        </div>
+        <div class="input-group" style="display: ${needs2FA}">
+            <label>2FA Code</label>
+            <input type="text" id="totp" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+        </div>
+        <button class="btn-login" onclick="doLogin()">Initalize Session</button>
+        <div id="error" class="error-msg"></div>
+    </div>
+    <script>
+        async function doLogin() {
+            const pass = document.getElementById('password').value;
+            const totp = document.getElementById('totp').value;
+            const err = document.getElementById('error');
+            
+            err.style.display = 'none';
+            
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pass, totp: totp })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    err.innerText = data.message.toUpperCase();
+                    err.style.display = 'block';
+                }
+            } catch (e) {
+                err.innerText = 'CONNECTION ERROR';
+                err.style.display = 'block';
+            }
+        }
+        document.addEventListener('keypress', (e) => { if(e.key === 'Enter') doLogin(); });
+    </script>
+</body>
+</html>`;
+  res.writeHead(200, { "Content-Type": "text/html" });
+  res.end(html);
+}
+
 function getCpuUsage() {
   const cpus = os.cpus();
   let totalIdle = 0,
@@ -108,6 +233,32 @@ export function startServer() {
   const port = process.env.PORT || 1337;
 
   const server = http.createServer(async (req, res) => {
+    const ip = getIP(req);
+
+    // 1. Handle Login API
+    if (req.method === "POST" && req.url === "/api/login") {
+      const data = await parsePostData(req);
+      try {
+        const token = login(data.password, data.totp, ip);
+        res.writeHead(200, {
+          "Set-Cookie": `rex_sid=${token}; HttpOnly; Path=/; SameSite=Strict; Max-Age=${24 * 60 * 60}`,
+          "Content-Type": "application/json",
+        });
+        res.end(JSON.stringify({ status: "success" }));
+      } catch (e) {
+        res.writeHead(401, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ status: "error", message: e.message }));
+      }
+      return;
+    }
+
+    // 2. Check Auth
+    const isAuth = authenticate(req);
+    if (!isAuth) {
+      // If not auth, only allow login page
+      return serveLogin(res);
+    }
+
     // АПИ ЭНДПОИНТЫ
     if (req.method === "POST") {
       const data = await parsePostData(req);

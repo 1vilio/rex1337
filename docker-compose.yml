@@ -15,10 +15,16 @@ services:
       - MAX_COMMENT_DELAY=80
       - ACCOUNT_SWITCH_DELAY=60
 
-      # --- SYSTEM ---
       - PORT=1337
       - LOG_LEVEL=info
       - TZ=Europe/Moscow
+      # --- SECURITY (Optional) ---
+      # Set a password to protect the dashboard. Leave empty to disable security.
+      - DASHBOARD_PASSWORD=
+      # Optional: Add TOTP 2FA. Requires DASHBOARD_PASSWORD to be set.
+      - DASHBOARD_2FA_SECRET=
+      # Optional: Secret key for signing sessions.
+      - SESSION_SECRET=
     volumes:
       # Пути относительно корня проекта
       - ./data:/app/data
