@@ -69,6 +69,17 @@ docker-compose up -d
 2. Добавьте свои Steam аккаунты через интерфейс или через `accounts.json` в папке `data`.
 3. Скрипт автоматически начнет работу, соблюдая все задержки и лимиты.
 
+### Переменные окружения
+| Переменная | Описание | По умолчанию |
+| :--- | :--- | :--- |
+| `REP4REP_KEY` | API ключ от rep4rep.com | (Обязательно) |
+| `MIN_COMMENT_DELAY` | Мин. задержка между комментариями (сек) | `30` |
+| `MAX_COMMENT_DELAY` | Макс. задержка между комментариями (сек) | `80` |
+| `ACCOUNT_SWITCH_DELAY`| Задержка перед сменой аккаунта (сек) | `60` |
+| `PORT` | Порт для дашборда и API | `1337` |
+| `LOG_LEVEL` | Уровень логирования (info, debug, error) | `info` |
+| `TZ` | Часовой пояс | `Europe/Moscow` |
+
 ---
 
 ### Лицензия
@@ -142,6 +153,17 @@ docker-compose up -d
 1. Open the dashboard in your browser at `http://your-server-ip:1337`.
 2. Add your Steam accounts via the UI or `accounts.json` in the `data` folder.
 3. The script will automatically start work, respecting all delays and limits.
+
+### Environment Variables
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `REP4REP_KEY` | API key from rep4rep.com | (Required) |
+| `MIN_COMMENT_DELAY` | Min delay between comments (sec) | `30` |
+| `MAX_COMMENT_DELAY` | Max delay between comments (sec) | `80` |
+| `ACCOUNT_SWITCH_DELAY`| Delay before switching accounts (sec) | `60` |
+| `PORT` | Port for dashboard and API | `1337` |
+| `LOG_LEVEL` | Logging level (info, debug, error) | `info` |
+| `TZ` | Timezone | `Europe/Moscow` |
 
 ---
 
