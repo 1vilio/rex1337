@@ -1,91 +1,149 @@
-![rex1337 (rep4rep script) Logo](./images/logo.png)
+![Logo](./images/logo.png)
 
-# rex1337 (rep4rep script)
+[Русский](#russian) | [English](#english)
+
+---
+
+<a name="russian"></a>
+# rex1337
 
 [![Docker](https://img.shields.io/badge/Docker-ready-blue.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An automated tool for farming points on [rep4rep.com](https://rep4rep.com) by posting comments on Steam profiles. Optimized for performance, server deployment, and HomeLab enthusiasts.
+Автоматизированный скрипт для фарма очков на rep4rep.com путем публикации комментариев в профилях Steam.
+
+### Основные возможности
+- Удобный веб-дашборд для мониторинга и управления.
+- Автоматический контроль кулдаунов (24 часа) и лимитов (10 комментариев на аккаунт в день).
+- Полная поддержка Docker для быстрого развертывания.
+- Поддержка Steam 2FA через sharedSecret.
+
+Для получения sharedSecret вы можете использовать:
+- [Steam Desktop Authenticator (SDA)](https://github.com/Jessecar96/SteamDesktopAuthenticator)
+- [NebulaAuth](https://github.com/achiez/NebulaAuth-Steam-Desktop-Authenticator-by-Achies)
 
 ---
 
-## ✨ Features
+### Деплой через Docker Compose (рекомендуется)
+Создайте файл `docker-compose.yml` и используйте готовый образ:
 
-- 🔄 **Infinite Loop**: Automatically manages Steam cooldowns (24h) and daily limits (10 comments/day).
-- 📊 **Web Dashboard**: Built-in status page and JSON API for monitoring (default port `1337`).
-- 🐳 **Docker Optimized**: Ultra-lightweight Alpine-based image.
-- 🔐 **Secure**: Automatic 2FA support via `sharedSecret`.
-- 📝 **Structured Logging**: Daily rotating logs to prevent disk bloat.
-- 🔔 **Telegram Notifications**: Supports periodic summaries and critical alerts.
-
----
-
-## 🚀 Quick Start (Deploy from Source)
-
-The most efficient way to deploy **rex1337** is using `docker-compose`. This method allows you to easily update the code and keep your data safe.
-
-### 1. Clone or Upload Files
-
-Clone this repository directly to your server or upload the files via SFTP:
-
-```bash
-git clone https://github.com/YOUR_LOGIN/rex1337.git
-cd rex1337
+```yaml
+services:
+  rex1337:
+    image: vilio614/rex1337:latest
+    container_name: rex1337
+    restart: unless-stopped
+    ports:
+      - "1337:1337"
+    environment:
+      - REP4REP_KEY=YOUR_API_KEY
+      - TZ=Europe/Moscow
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./avatars:/app/avatars
 ```
 
-### 2. Configure Settings
+**Добавление аккаунтов:**
+- Через дашборд: `http://localhost:1337`
+- Вручную: отредактируйте файл `data/accounts.json`.
 
-1. **Environment**: Open `docker-compose.yml` and add your `REP4REP_KEY` in the `environment` section.
-2. **Accounts**: Edit `accounts.json` and add your Steam credentials.
+---
 
-### 3. Launch & Build
+### Локальный запуск (из исходников)
+1. Склонируйте репозиторий.
+2. Установите зависимости: `npm install`.
+3. Настройте `docker-compose.yml` (используя `build: .`).
+4. Запустите: `docker-compose up -d --build`.
 
-Since you are using the source code, Docker will build the image locally on your server:
+---
 
+### Инструкция по запуску
+После того как вы подготовили `docker-compose.yml`, запустите контейнер командой:
 ```bash
-docker-compose up -d --build
+docker-compose up -d
 ```
 
-Access your dashboard at `http://your-server-ip:1337`.
-
-### 🔄 How to Update
-
-- **If you change `accounts.json` or environment vars**:
-  ```bash
-  docker-compose restart
-  ```
-- **If you update the script code (`.js` files)**:
-  ```bash
-  docker-compose up -d --build
-  ```
+**После запуска:**
+1. Откройте панель управления в браузере по адресу `http://ваш-ip:1337`.
+2. Добавьте свои Steam аккаунты через интерфейс или через `accounts.json` в папке `data`.
+3. Скрипт автоматически начнет работу, соблюдая все задержки и лимиты.
 
 ---
 
-## ⚙️ Configuration (environment)
+### Лицензия
+Данный проект распространяется под лицензией MIT. Подробности в файле LICENSE.
 
-You can configure these variables directly in your `docker-compose.yml`:
+<br>
+<hr>
+<br>
 
-| Variable               | Description                           | Default    |
-| ---------------------- | ------------------------------------- | ---------- |
-| `REP4REP_KEY`          | Your Rep4Rep API Key                  | (Required) |
-| `MIN_COMMENT_DELAY`    | Min delay between comments (sec)      | `60`       |
-| `MAX_COMMENT_DELAY`    | Max delay between comments (sec)      | `300`      |
-| `ACCOUNT_SWITCH_DELAY` | Delay before switching accounts (sec) | `30`       |
-| `TELEGRAM_TOKEN`       | Telegram Bot Token                    | (Optional) |
-| `PORT`                 | Dashboard/API Port                    | `1337`     |
+<a name="english"></a>
+# rex1337
+
+[![Docker](https://img.shields.io/badge/Docker-ready-blue.svg)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+Automated script for farming points on rep4rep.com by posting comments on Steam profiles.
+
+### Key Features
+- Clean web dashboard for monitoring and management.
+- Automatic cooldown management (24h) and limits (10 comments per account per day).
+- Full Docker support for rapid deployment.
+- Steam 2FA support via sharedSecret.
+
+To obtain your sharedSecret, you can use:
+- [Steam Desktop Authenticator (SDA)](https://github.com/Jessecar96/SteamDesktopAuthenticator)
+- [NebulaAuth](https://github.com/achiez/NebulaAuth-Steam-Desktop-Authenticator-by-Achies)
 
 ---
 
-## 👨‍💻 Monitoring & API
+### Deploy via Docker Compose (Recommended)
+Create a `docker-compose.yml` file and use the pre-built image:
 
-- **Dashboard**: `http://localhost:1337`
-- **JSON Status**: `http://localhost:1337/api/status`
-- **Health Check**: `http://localhost:1337/health`
+```yaml
+services:
+  rex1337:
+    image: vilio614/rex1337:latest
+    container_name: rex1337
+    restart: unless-stopped
+    ports:
+      - "1337:1337"
+    environment:
+      - REP4REP_KEY=YOUR_API_KEY
+      - TZ=Europe/Moscow
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./avatars:/app/avatars
+```
+
+**Adding Accounts:**
+- Via Dashboard: `http://localhost:1337`
+- Manually: edit `data/accounts.json`.
 
 ---
 
-## ⚖️ License
+### Local Setup (from source)
+1. Clone the repository.
+2. Install dependencies: `npm install`.
+3. Configure `docker-compose.yml` (using `build: .`).
+4. Run: `docker-compose up -d --build`.
 
-Distributed under the MIT License. See `LICENSE` for more information.
+---
 
-_Disclaimer: This tool is for educational purposes. Use it at your own risk and according to the terms of service of the respective platforms._
+### Quick Start Guide
+Once your `docker-compose.yml` is ready, start the container:
+```bash
+docker-compose up -d
+```
+
+**Post-Launch:**
+1. Open the dashboard in your browser at `http://your-server-ip:1337`.
+2. Add your Steam accounts via the UI or `accounts.json` in the `data` folder.
+3. The script will automatically start work, respecting all delays and limits.
+
+---
+
+### License
+Distributed under the MIT License. See LICENSE for more information.

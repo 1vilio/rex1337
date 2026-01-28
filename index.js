@@ -9,7 +9,7 @@ import { startServer, updateAppState, appState } from "./server.js";
 
 const STATE_FILE = "./data/state.json";
 let isRunning = true;
-let taskHistory = []; // Track last 24h of successes
+let taskHistory = []; // Тркеаем последние успешные задания за 24 часа
 
 // --- Graceful Shutdown ---
 const shutdown = async () => {
@@ -25,10 +25,10 @@ const shutdown = async () => {
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
 
-// Start HomeLab Server
+
 startServer();
 
-// --- State Management ---
+// Стейт менеджмент
 function loadState() {
   if (existsSync(STATE_FILE)) {
     try {
@@ -110,8 +110,8 @@ function syncDashboardAccounts() {
       totalCompleted: accState.totalCompleted || 0,
       cooldown: isCooldown
         ? `Until ${new Date(accState.cooldownUntil).toLocaleTimeString(
-            "en-GB",
-          )}`
+          "en-GB",
+        )}`
         : accState.lastError
           ? "FAILED"
           : "Available",
@@ -131,7 +131,7 @@ function getRandomDelay(min, max) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// --- Core Logic ---
+// Кор логика скрипта
 async function loginAccount(account) {
   return new Promise((resolve, reject) => {
     const user = new SteamUser({ renewRefreshTokens: true });
@@ -294,8 +294,7 @@ async function processAccount(session) {
         });
 
         logger.info(
-          `[SUCCESS] Posted comment to ${
-            task.targetSteamProfileId
+          `[SUCCESS] Posted comment to ${task.targetSteamProfileId
           } (${Math.round(taskDuration / 1000)}s)`,
           { account: username },
         );
@@ -434,7 +433,7 @@ async function main() {
       const memoryUsage =
         (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2) + " MB";
 
-      // Simple Health Indicators
+      // Индикаторы здоровья апишек
       const apiStatus = {
         rep4rep: "online",
         steam: "online",

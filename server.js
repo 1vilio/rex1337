@@ -53,20 +53,20 @@ export function updateAppState(newState) {
     const entry =
       typeof newState.logEntry === "string"
         ? {
-            text: newState.logEntry,
-            type: "info",
-            time: new Date().toLocaleTimeString("en-GB"),
-          }
+          text: newState.logEntry,
+          type: "info",
+          time: new Date().toLocaleTimeString("en-GB"),
+        }
         : {
-            ...newState.logEntry,
-            time: new Date().toLocaleTimeString("en-GB"),
-          };
+          ...newState.logEntry,
+          time: new Date().toLocaleTimeString("en-GB"),
+        };
 
     appState.logs = [entry, ...appState.logs].slice(0, 20);
     delete newState.logEntry;
   }
 
-  // Deep merged update to preserve references where possible
+  // Обновление для сохранения ссылок, где это возможно.
   if (newState.stats) Object.assign(appState.stats, newState.stats);
   if (newState.system) Object.assign(appState.system, newState.system);
   if (newState.accounts) appState.accounts = newState.accounts;
@@ -108,7 +108,7 @@ export function startServer() {
   const port = process.env.PORT || 1337;
 
   const server = http.createServer(async (req, res) => {
-    // API Endpoints
+    // АПИ ЭНДПОИНТЫ
     if (req.method === "POST") {
       const data = await parsePostData(req);
 
@@ -208,7 +208,7 @@ export function startServer() {
       return;
     }
 
-    // Serve Avatars
+    // Аватарки
     if (req.url.startsWith("/avatars/")) {
       const fileName = req.url.split("/").pop();
       const filePath = `./avatars/${fileName}`;
@@ -223,7 +223,8 @@ export function startServer() {
       return;
     }
 
-    if (req.url === "/" || req.url === "/dashboard") {
+    const path = req.url.split("?")[0];
+    if (path === "/" || path === "/dashboard" || path === "/dashboard/") {
       const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
