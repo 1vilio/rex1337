@@ -1,0 +1,26 @@
+services:
+  rex1337:
+    # Указываем Докеру имя образа на Docker Hub
+    image: your-username/rex1337:latest
+    container_name: rex1337
+    restart: unless-stopped
+    ports:
+      - "${PORT:-1337}:1337"
+    environment:
+      # --- REQUIRED ---
+      - REP4REP_KEY=YOUR_API_KEY_HERE
+      
+      # --- OPTIONAL: Delay Settings ---
+      - MIN_COMMENT_DELAY=30
+      - MAX_COMMENT_DELAY=80
+      - ACCOUNT_SWITCH_DELAY=60
+
+      # --- SYSTEM ---
+      - PORT=1337
+      - LOG_LEVEL=info
+      - TZ=Europe/Moscow
+    volumes:
+      # Пути относительно корня проекта
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./avatars:/app/avatars

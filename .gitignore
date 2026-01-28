@@ -1,0 +1,8 @@
+node_modules
+logs/*.log
+refresh_token_*.txt
+state.json
+accounts.json
+.env
+.DS_Store
+npm-debug.log

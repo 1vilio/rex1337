@@ -1,0 +1,8 @@
+.git
+node_modules
+logs/*.log
+refresh_token_*.txt
+state.json
+accounts.json
+.env
+npm-debug.log
