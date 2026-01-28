@@ -49,6 +49,9 @@ services:
     environment:
       - REP4REP_KEY=YOUR_API_KEY
       - TZ=Europe/Moscow
+      - DASHBOARD_PASSWORD=
+      - DASHBOARD_2FA_SECRET=
+      - SESSION_SECRET=
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -147,6 +150,9 @@ services:
     environment:
       - REP4REP_KEY=YOUR_API_KEY
       - TZ=Europe/Moscow
+      - DASHBOARD_PASSWORD=
+      - DASHBOARD_2FA_SECRET=
+      - SESSION_SECRET=
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
